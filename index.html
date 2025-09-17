@@ -1,0 +1,596 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulateur de Revenus France 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            padding: 40px;
+        }
+
+        .input-section {
+            background: #f8f9ff;
+            padding: 30px;
+            border-radius: 15px;
+            border: 2px solid #e1e8ff;
+        }
+
+        .results-section {
+            background: linear-gradient(135deg, #ffeaa7 0%, #fab1a0 100%);
+            padding: 30px;
+            border-radius: 15px;
+            color: #2d3436;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2d3436;
+        }
+
+        input[type="number"], input[type="range"] {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="number"]:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        input[type="range"] {
+            -webkit-appearance: none;
+            height: 8px;
+            background: #ddd;
+            border-radius: 5px;
+            padding: 0;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            background: #667eea;
+            cursor: pointer;
+            border-radius: 50%;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 60px;
+            height: 34px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: .4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: #667eea;
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .range-display {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 8px;
+        }
+
+        .range-value {
+            font-weight: 600;
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+
+        .result-card {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .result-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 10px;
+        }
+
+        .result-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2d3436;
+        }
+
+        .breakdown {
+            margin-top: 30px;
+        }
+
+        .breakdown-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .breakdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #2d3436;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                padding: 20px;
+                gap: 20px;
+            }
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .input-section, .results-section {
+                padding: 20px;
+            }
+
+            .result-value {
+                font-size: 1.5rem;
+            }
+        }
+
+        .euro {
+            color: #00b894;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+            font-size: 0.9rem;
+        }
+
+        .warning {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            color: #e65100;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Simulateur de Revenus</h1>
+            <p>Calculateur précis avec fiscalité française 2025</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-section">
+                <h2 class="section-title">Paramètres de simulation</h2>
+                
+                <div class="form-group">
+                    <label for="annuelBrut">Salaire annuel brut (€)</label>
+                    <input type="number" id="annuelBrut" min="0" step="100" value="50000">
+                </div>
+
+                <div class="form-group">
+                    <label for="mensuelBrut">Salaire mensuel brut (€)</label>
+                    <input type="number" id="mensuelBrut" min="0" step="10" value="4167">
+                </div>
+
+                <div class="form-group">
+                    <label for="mensuelNet">Salaire mensuel net avant impôts (€)</label>
+                    <input type="number" id="mensuelNet" min="0" step="10" value="3250" readonly>
+                </div>
+
+                <div class="form-group">
+                    <label>Statut cadre</label>
+                    <label class="switch">
+                        <input type="checkbox" id="isCadre">
+                        <span class="slider"></span>
+                    </label>
+                    <div style="margin-top: 10px; font-size: 0.9rem; color: #666;">
+                        <span id="cadreStatus">Non-cadre</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tempsTravaill">Temps de travail (%)</label>
+                    <input type="range" id="tempsTravail" min="0" max="100" value="100">
+                    <div class="range-display">
+                        <span>0%</span>
+                        <span class="range-value" id="tempsTravailValue">100%</span>
+                        <span>100%</span>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="tauxPrelevement">Taux de prélèvement à la source (%)</label>
+                    <input type="range" id="tauxPrelevement" min="0" max="43" value="10" step="0.1">
+                    <div class="range-display">
+                        <span>0%</span>
+                        <span class="range-value" id="tauxPrelevementValue">10.0%</span>
+                        <span>43%</span>
+                    </div>
+                </div>
+
+                <div class="info-box">
+                    <strong>Données fiscales 2025 :</strong><br>
+                    • Plafond Sécurité Sociale : 3 925€/mois (47 100€/an)<br>
+                    • Cotisations salariales : ~22% (non-cadre) / ~25% (cadre)<br>
+                    • CSG/CRDS : 9,7% sur 98,25% du salaire brut
+                </div>
+            </div>
+
+            <div class="results-section">
+                <h2 class="section-title">Résultats</h2>
+                
+                <div class="result-card">
+                    <div class="result-title">Mensuel net après impôts</div>
+                    <div class="result-value euro" id="mensuelNetApresImpots">0 €</div>
+                </div>
+
+                <div class="result-card">
+                    <div class="result-title">Annuel net après impôts</div>
+                    <div class="result-value euro" id="annuelNetApresImpots">0 €</div>
+                </div>
+
+                <div class="breakdown">
+                    <h3 style="margin-bottom: 15px;">Détail des prélèvements mensuels</h3>
+                    
+                    <div class="breakdown-item">
+                        <span>Salaire brut</span>
+                        <span class="euro" id="breakdownBrut">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item">
+                        <span>Sécurité sociale</span>
+                        <span id="breakdownSecu">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item">
+                        <span>Retraite complémentaire</span>
+                        <span id="breakdownRetraite">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item">
+                        <span>CSG/CRDS</span>
+                        <span id="breakdownCSG">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item" id="breakdownCadreRow" style="display: none;">
+                        <span>APEC (cadre)</span>
+                        <span id="breakdownAPEC">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item">
+                        <span>Chômage</span>
+                        <span id="breakdownChomage">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item" style="border-top: 2px solid rgba(255,255,255,0.5); margin-top: 10px; padding-top: 15px;">
+                        <span><strong>Net avant impôts</strong></span>
+                        <span class="euro" id="breakdownNetAvantImpots">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item">
+                        <span>Prélèvement à la source</span>
+                        <span id="breakdownImpots">0 €</span>
+                    </div>
+                    
+                    <div class="breakdown-item" style="border-top: 2px solid rgba(255,255,255,0.8); margin-top: 10px; padding-top: 15px; font-size: 1.1rem;">
+                        <span><strong>Net après impôts</strong></span>
+                        <span class="euro" id="breakdownNetFinal"><strong>0 €</strong></span>
+                    </div>
+                </div>
+
+                <div class="info-box warning">
+                    <strong>Attention :</strong> Ce simulateur donne une estimation basée sur les taux 2025. Le montant réel peut varier selon votre situation personnelle et les éventuelles exonérations applicables.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Constantes fiscales 2025
+        const FISCAL_DATA = {
+            PLAFOND_SECU_MENSUEL: 3925,
+            PLAFOND_SECU_ANNUEL: 47100,
+            
+            // Cotisations salariales (en %)
+            SECU_SOCIALE: 0.75, // Maladie + famille
+            RETRAITE_BASE: 6.90, // Retraite de base
+            RETRAITE_COMP_NON_CADRE_T1: 3.15, // ARRCO tranche 1
+            RETRAITE_COMP_NON_CADRE_T2: 8.64, // ARRCO tranche 2
+            RETRAITE_COMP_CADRE_T1: 3.15, // ARRCO tranche 1
+            RETRAITE_COMP_CADRE_T2: 8.64, // ARRCO tranche 2
+            RETRAITE_COMP_CADRE_AGIRC_TB: 7.80, // AGIRC-ARRCO TB
+            RETRAITE_COMP_CADRE_AGIRC_TC: 7.80, // AGIRC-ARRCO TC
+            CHOMAGE: 2.40,
+            CSG_CRDS: 9.70, // CSG + CRDS
+            CSG_CRDS_ASSIETTE: 0.9825, // 98.25% du salaire brut
+            APEC: 0.024, // Pour les cadres seulement
+            CET: 0.13 // Contribution exceptionnelle temporaire sur hauts revenus (> 4 plafonds SS)
+        };
+
+        // Éléments DOM
+        const annuelBrutInput = document.getElementById('annuelBrut');
+        const mensuelBrutInput = document.getElementById('mensuelBrut');
+        const mensuelNetInput = document.getElementById('mensuelNet');
+        const isCadreInput = document.getElementById('isCadre');
+        const tempsTravailInput = document.getElementById('tempsTravail');
+        const tauxPrelevementInput = document.getElementById('tauxPrelevement');
+        
+        const cadreStatus = document.getElementById('cadreStatus');
+        const tempsTravailValue = document.getElementById('tempsTravailValue');
+        const tauxPrelevementValue = document.getElementById('tauxPrelevementValue');
+        
+        const mensuelNetApresImpots = document.getElementById('mensuelNetApresImpots');
+        const annuelNetApresImpots = document.getElementById('annuelNetApresImpots');
+        
+        let isUpdating = false;
+
+        function calculateCotisationsSalariales(salaireBrutMensuel, isCadre) {
+            const plafond = FISCAL_DATA.PLAFOND_SECU_MENSUEL;
+            const tranche1 = Math.min(salaireBrutMensuel, plafond);
+            const tranche2 = Math.max(0, Math.min(salaireBrutMensuel - plafond, plafond * 2));
+            const trancheC = Math.max(0, Math.min(salaireBrutMensuel - plafond * 3, plafond * 5));
+            
+            let cotisations = {
+                secu: salaireBrutMensuel * FISCAL_DATA.SECU_SOCIALE / 100,
+                retraiteBase: tranche1 * FISCAL_DATA.RETRAITE_BASE / 100,
+                retraiteComp: 0,
+                chomage: Math.min(salaireBrutMensuel, plafond * 4) * FISCAL_DATA.CHOMAGE / 100,
+                csgCrds: salaireBrutMensuel * FISCAL_DATA.CSG_CRDS_ASSIETTE * FISCAL_DATA.CSG_CRDS / 100,
+                apec: 0,
+                cet: 0
+            };
+
+            if (isCadre) {
+                // Cotisations retraite complémentaire cadre
+                cotisations.retraiteComp = tranche1 * FISCAL_DATA.RETRAITE_COMP_CADRE_T1 / 100 + 
+                                          tranche2 * FISCAL_DATA.RETRAITE_COMP_CADRE_T2 / 100 +
+                                          trancheC * FISCAL_DATA.RETRAITE_COMP_CADRE_AGIRC_TB / 100;
+                
+                // APEC pour les cadres
+                cotisations.apec = Math.min(salaireBrutMensuel, plafond * 4) * FISCAL_DATA.APEC / 100;
+            } else {
+                // Cotisations retraite complémentaire non-cadre
+                cotisations.retraiteComp = tranche1 * FISCAL_DATA.RETRAITE_COMP_NON_CADRE_T1 / 100 + 
+                                          tranche2 * FISCAL_DATA.RETRAITE_COMP_NON_CADRE_T2 / 100;
+            }
+
+            // CET sur les très hauts salaires (> 4 plafonds SS)
+            if (salaireBrutMensuel > plafond * 4) {
+                cotisations.cet = (salaireBrutMensuel - plafond * 4) * FISCAL_DATA.CET / 100;
+            }
+
+            return cotisations;
+        }
+
+        function formatCurrency(amount) {
+            return new Intl.NumberFormat('fr-FR', {
+                style: 'currency',
+                currency: 'EUR',
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            }).format(Math.round(amount));
+        }
+
+        function updateCalculations() {
+            if (isUpdating) return;
+            
+            const annuelBrut = parseFloat(annuelBrutInput.value) || 0;
+            const mensuelBrut = parseFloat(mensuelBrutInput.value) || 0;
+            const isCadre = isCadreInput.checked;
+            const tempsTravail = parseFloat(tempsTravailInput.value) / 100;
+            const tauxPrelevement = parseFloat(tauxPrelevementInput.value);
+
+            // Calcul du salaire brut effectif (avec temps partiel)
+            const salaireBrutEffectifMensuel = mensuelBrut * tempsTravail;
+            const salaireBrutEffectifAnnuel = annuelBrut * tempsTravail;
+
+            // Calcul des cotisations salariales
+            const cotisations = calculateCotisationsSalariales(salaireBrutEffectifMensuel, isCadre);
+            
+            const totalCotisations = cotisations.secu + cotisations.retraiteBase + cotisations.retraiteComp + 
+                                   cotisations.chomage + cotisations.csgCrds + cotisations.apec + cotisations.cet;
+            
+            const netAvantImpots = salaireBrutEffectifMensuel - totalCotisations;
+            const impots = netAvantImpots * tauxPrelevement / 100;
+            const netApresImpots = netAvantImpots - impots;
+            
+            const netApresImpotsAnnuel = netApresImpots * 12;
+
+            // Mise à jour des résultats
+            mensuelNetApresImpots.textContent = formatCurrency(netApresImpots);
+            annuelNetApresImpots.textContent = formatCurrency(netApresImpotsAnnuel);
+            
+            // Mise à jour du net avant impôts dans l'input
+            isUpdating = true;
+            mensuelNetInput.value = Math.round(netAvantImpots);
+            isUpdating = false;
+
+            // Mise à jour du détail
+            document.getElementById('breakdownBrut').textContent = formatCurrency(salaireBrutEffectifMensuel);
+            document.getElementById('breakdownSecu').textContent = formatCurrency(cotisations.secu);
+            document.getElementById('breakdownRetraite').textContent = formatCurrency(cotisations.retraiteBase + cotisations.retraiteComp);
+            document.getElementById('breakdownCSG').textContent = formatCurrency(cotisations.csgCrds);
+            document.getElementById('breakdownChomage').textContent = formatCurrency(cotisations.chomage);
+            document.getElementById('breakdownNetAvantImpots').textContent = formatCurrency(netAvantImpots);
+            document.getElementById('breakdownImpots').textContent = formatCurrency(impots);
+            document.getElementById('breakdownNetFinal').textContent = formatCurrency(netApresImpots);
+            
+            // Gestion de l'APEC pour les cadres
+            const cadreRow = document.getElementById('breakdownCadreRow');
+            if (isCadre) {
+                cadreRow.style.display = 'flex';
+                document.getElementById('breakdownAPEC').textContent = formatCurrency(cotisations.apec);
+            } else {
+                cadreRow.style.display = 'none';
+            }
+        }
+
+        // Synchronisation des champs brut annuel/mensuel
+        annuelBrutInput.addEventListener('input', function() {
+            if (isUpdating) return;
+            isUpdating = true;
+            mensuelBrutInput.value = Math.round(parseFloat(this.value) / 12) || 0;
+            isUpdating = false;
+            updateCalculations();
+        });
+
+        mensuelBrutInput.addEventListener('input', function() {
+            if (isUpdating) return;
+            isUpdating = true;
+            annuelBrutInput.value = Math.round(parseFloat(this.value) * 12) || 0;
+            isUpdating = false;
+            updateCalculations();
+        });
+
+        mensuelNetInput.addEventListener('input', function() {
+            if (!isUpdating) {
+                // Calcul inverse : du net vers le brut
+                const netTarget = parseFloat(this.value) || 0;
+                const tempsTravail = parseFloat(tempsTravailInput.value) / 100;
+                const isCadre = isCadreInput.checked;
+                
+                // Estimation par itération (méthode de Newton simplifiée)
+                let brutEstime = netTarget / 0.78; // Estimation initiale
+                for (let i = 0; i < 10; i++) {
+                    const cotisations = calculateCotisationsSalariales(brutEstime, isCadre);
+                    const totalCotisations = cotisations.secu + cotisations.retraiteBase + cotisations.retraiteComp + 
+                                           cotisations.chomage + cotisations.csgCrds + cotisations.apec + cotisations.cet;
+                    const netCalcule = brutEstime - totalCotisations;
+                    const erreur = netCalcule - netTarget;
+                    
+                    if (Math.abs(erreur) < 1) break;
+                    brutEstime -= erreur * 0.8; // Facteur de convergence
+                }
+                
+                brutEstime = brutEstime / tempsTravail;
+                
+                isUpdating = true;
+                mensuelBrutInput.value = Math.round(brutEstime);
+                annuelBrutInput.value = Math.round(brutEstime * 12);
+                isUpdating = false;
+                updateCalculations();
+            }
+        });
+
+        isCadreInput.addEventListener('change', function() {
+            cadreStatus.textContent = this.checked ? 'Cadre' : 'Non-cadre';
+            updateCalculations();
+        });
+
+        tempsTravailInput.addEventListener('input', function() {
+            tempsTravailValue.textContent = this.value + '%';
+            updateCalculations();
+        });
+
+        tauxPrelevementInput.addEventListener('input', function() {
+            tauxPrelevementValue.textContent = parseFloat(this.value).toFixed(1) + '%';
+            updateCalculations();
+        });
+
+        // Initialisation
+        updateCalculations();
+    </script>
+</body>
+</html>
